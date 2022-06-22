@@ -6,8 +6,8 @@ const Header: React.FC = () => {
          <div className={styles.headerContent}>
              <img src='/images/logo.svg' alt='logo' />
              <nav>
-                 <a>Home</a>
-                 <a>Posts</a>
+                 <a className={styles.active}>Home</a>
+                 <a className={styles.active}>Posts</a>
              </nav>
          </div>
          </header>;
