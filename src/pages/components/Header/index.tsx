@@ -1,4 +1,5 @@
 import React from 'react';
+import SignInButton from '../SignInButton';
 import styles from './styles.module.scss';
 
 const Header: React.FC = () => {
@@ -9,6 +10,8 @@ const Header: React.FC = () => {
                  <a className={styles.active}>Home</a>
                  <a className={styles.active}>Posts</a>
              </nav>
+
+             <SignInButton />
          </div>
          </header>;
 }
