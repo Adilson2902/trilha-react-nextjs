@@ -1,6 +1,7 @@
 import { query as q} from "faunadb";
 
 import NextAuth from "next-auth";
+import { JWT } from "next-auth/jwt";
 import GithubProvider from "next-auth/providers/github";
 
 import { fauna } from "../../../services/faunadb";
@@ -21,11 +22,26 @@ export default NextAuth({
       try 
       {
         await fauna.query(
-          q.Create(
-            q.Collection('users'),{
-              data: { email: user.email }
-            }
+        q.If(
+          q.Not(
+            q.Exists(
+              q.Match(
+                q.Index('user_by_email'),
+                q.Casefold(user.email),
+              )
+            )
+          ),
+         q.Create(
+          q.Collection('users'),{
+            data: { email: user.email }
+          }
+        ), q.Get(
+            q.Match(
+              q.Index('user_by_email'),
+              q.Casefold(user.email),
+            )
           )
+        )
         )
   
         return true;
@@ -37,10 +53,5 @@ export default NextAuth({
 
     
     },
-  },
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-    updateAge: 24 * 60 * 60, // 24 hours
   }
 })
