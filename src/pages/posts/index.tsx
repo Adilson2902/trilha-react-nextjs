@@ -1,9 +1,21 @@
 import Head  from 'next/head';
 import { client } from '../../services/prismic';
-import Prismic from "@prismicio/client"
+import { RichText } from 'prismic-dom';
 import styles from './styles.module.scss';
 
-export default function Posts({ page }) {
+interface IPage {
+    slug: string,
+    date: string,
+    title: string,
+    content:  string,
+}
+
+interface IPropsPage {
+    page: IPage[],
+}
+
+export default function Posts({ page }: IPropsPage) {
+
 
     return (
         <>
@@ -12,12 +24,12 @@ export default function Posts({ page }) {
         <main className={styles.container}>
             <div className={styles.posts}>
             {
-                page.map((i, index)=> {
+                page.map((i)=> {
                     return (
-                        <a href='' key={index}>
-                        <time>12 de março de 2021</time>
-                        <strong>{i.data.title[0].text}</strong>
-                        <p>{i.data.content[0].text}</p>
+                        <a href='' key={i.slug}>
+                        <time>{i.date}</time>
+                        <strong>{i.title}</strong>
+                        <p>{i.content}</p>
                         </a>
                     )    
                 })
@@ -33,10 +45,21 @@ export default function Posts({ page }) {
 export async function getStaticProps() {
   
     const page = await client.dangerouslyGetAll();
+
+    const posts = page.map(i => ({
+        slug: i.uid,
+        date: new Date(i.last_publication_date).toLocaleDateString('pt-BR', {
+            day: '2-digit',
+            month: 'long',
+            year: 'numeric'
+        }),
+        title: RichText.asText(i.data.title),
+        content: i.data.content.find(content => content.type === "paragraph")?.text ?? ''
+    }))
   
     return {
       props: {
-        page: page,
+        page: posts,
       },
     }
   }
