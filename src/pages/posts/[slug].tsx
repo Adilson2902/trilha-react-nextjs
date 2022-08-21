@@ -39,9 +39,14 @@ export const getServerSideProps: GetServerSideProps = async ({ req, params }) =>
     const session = await getSession({ req })
     const { slug } = params;
 
-    // if(!session){
-
-    // }
+    if(!session.activeSubscription){
+        return {
+            redirect: {
+                destination: '/',
+                permanent: false
+            }
+        }
+    }
 
     const prismic = await client.getByUID('post', String(slug), {});
 
@@ -55,8 +60,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, params }) =>
             year: 'numeric'
         }),
     }
-
-    console.log(post)
 
     return {
         props: {
