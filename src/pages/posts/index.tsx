@@ -2,6 +2,7 @@ import Head  from 'next/head';
 import { client } from '../../services/prismic';
 import { RichText } from 'prismic-dom';
 import styles from './styles.module.scss';
+import Link from 'next/link';
 
 interface IPage {
     slug: string,
@@ -26,11 +27,13 @@ export default function Posts({ page }: IPropsPage) {
             {
                 page.map((i)=> {
                     return (
-                        <a href='' key={i.slug}>
+                        <Link href={`/posts/${i.slug}`} key={i.slug}>
+                        <a>
                         <time>{i.date}</time>
                         <strong>{i.title}</strong>
                         <p>{i.content}</p>
                         </a>
+                        </Link>
                     )    
                 })
             }
